@@ -36,7 +36,42 @@ var stringifyJSON = function(obj) {
   	return 'false';
   }
   else if (typeof obj === 'string') {
-  	return obj;
+  	return '"' + obj + '"';
+  }
+  // Cases for arrays
+  else if (Array.isArray(obj)) {
+  	var len = obj.length;
+  	if (len === 0) {
+  		return '[]';
+  	}
+  	else {
+  		var result = '[';
+  		for (var i=0; i<len-1; i++) {
+  			result = result + stringifyJSON(obj[i]) + ',';
+  		}
+  		result = result + stringifyJSON(obj[len-1]) + ']'
+  		return result;
+  	}
+  }
+  // Cases for objects
+  else {
+  	var objKeys = Object.keys(obj);
+  	var len = objKeys.length;
+  	if (len === 0) {
+  		return '{}';
+  	}
+  	else {
+  		var result = '{';
+  		for (var i=0; i<len-1; i++) {
+  			// Take care of the unstringifiableValues
+  			if (typeof obj[objKeys[i]] === 'function' || obj[objKeys[i]] === undefined){
+  				return '{}';
+  			}
+  			result = result + '"' + objKeys[i] + '":' + stringifyJSON(obj[objKeys[i]]) + ',';
+  		}
+  		result = result + '"' + objKeys[len-1] + '":' + stringifyJSON(obj[objKeys[len-1]]) + '}';
+  		return result;
+  	}
   }
 };
 
